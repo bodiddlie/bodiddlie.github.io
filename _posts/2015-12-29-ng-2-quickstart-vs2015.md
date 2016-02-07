@@ -4,6 +4,7 @@ title: "Angular 2 QuickStart in Visual Studio 2015"
 slug: "ng-2-quickstart-vs2015"
 date: 2015-12-29 20:18:00 -0700
 categories: [angular2, web development, programming, typscript, visual studio]
+comments: true
 ---
 On the 15th of December, Angular 2 finally hit beta status. I immediately wanted to run through the QuickStart tutorial and take it for a spin. On my Macbook at home, this went swimmingly. Following the directions worked exactly as it should.
 
