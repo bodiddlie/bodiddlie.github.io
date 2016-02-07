@@ -150,9 +150,3 @@ Again, I'm new to Node, so don't take this example as something *you* should do.
 lesson you can learn from all this, though. When you have code smell, make sure you look at 
 all the pieces that affect the problematic code. The biggest cause of the problem might very 
 well be poor design in another piece of code.
-
----
-I don't have comments set up yet for the blog, but if you want to ask me a question or if you
-have better ideas for how to approach this, please hit me up on [Twitter](https://twitter.com/bodiddlie).
-
-I'm planning on writing here a lot more, so hopefully I'll have Disquss comments here soon.
