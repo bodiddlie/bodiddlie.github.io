@@ -2,6 +2,8 @@
 layout: post
 title: "Adventures with Node Callback Hell"
 categories: [node, javascript, programming]
+date: 2016-02-07 13:03:00 -0700
+comments: true
 ---
 I've been playing around with creating a simple web API using [NodeJS](http://nodejs.org) and 
 [Express](http://expressjs.org) recently. I've found it to be a lot of fun to work with, however,
@@ -10,7 +12,7 @@ my code. This has led to some seriously ugly and over-indented code.
 
 I've been working on a simple login endpoint for the API that would return a JWT for a valid user.
 I've been refactoring this piece of code for quite a bit today, and I think finally have it
-to where I'm happy with it. I wanted to run through some of the iterations, so you could see
+where I'm happy with it. I'd like to run through some of the iterations, so you could see
 the process of improving this code. 
 
 So first up is the ugly version:
