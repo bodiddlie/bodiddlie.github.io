@@ -50,16 +50,16 @@ interchangeable with SystemJS (don't quote me on that, though). For a great intr
 Angular 2, check out the [docs](https://angular.io/docs/ts/latest/guide/webpack.html).
 
 One other quick difference from the Tour of Heroes tutorial is that for my backend http calls, I'm using 
-the node package [json-server](https://github.com/typicode/json-server). By using this in conjunction with a 
-webpack-dev-server configuration, I can proxy all calls to `/api/*` to the `json-server` instance. This 
-serves up data from a simple JSON file. I found this method to be great in the project I've been working 
+the node package [json-server](https://github.com/typicode/json-server). Using this in conjunction with a 
+webpack-dev-server configuration allows me to proxy all calls to `/api/*` to the `json-server` instance. This 
+serves up data from a simple JSON file. I found this method to be useful in the project I'm working 
 on as I can mock out my backend API without having to spin up IIS express (the backend for that is a ASP.NET 
 Web API project).
 
 ### Taking Action
 ---
 At the heart of ngrx/store is the Action. By dispatching actions to the store, the state of our application is
-updated. There are any number of ways to construct actions and dispatch them; they are, after all, just simple
+updated. There are many ways to construct actions and dispatch them. They are, after all just simple
 objects with a `type` and a `payload` property. The [ngrx example app](https://github.com/ngrx/example-app) 
 uses a structure that may seem verbose, but I feel is very extensible and easy to maintain. Here's the 
 contents of our Tour of Heroes actions:
@@ -161,7 +161,7 @@ export class HeroActions {
 {% endhighlight %}
 
 I won't spend a lot of time on this file as it is fairly simple and can seem almost repetitive. I'll just
-highlight a few key points. We start with our imports. Using `@Injectable` allows this to be injected by 
+highlight a few key points. I start with the imports. Using `@Injectable` allows this to be injected by 
 the Angular 2 dependency injector. `Action` is a simple interface that ngrx/store provides and since we're
 using Typescript we might as well have all the type checking we can get. The `Hero` model is no different
 from what is used in the official tutorial.
@@ -176,15 +176,15 @@ import {Hero} from '../models';
 Next we have our class that defines our actions. Since an action type is just a unique string, I include all
 the action types as static properties on the class. This makes them easy to use and alleviates the problem
 of having a typo in a magic string somewhere in the app. You'll see a pattern here for most of the actions
-wher I have a initial action and a success action. This maps out to any asynchronous actions we might take.
-The initial action kicks off a chain of events, and the success action is what notifies the application
+where I have an initial action and a success action. This maps out to any asynchronous actions we might take.
+The initial action kicks off a chain of events, and the success action notifies the application
 that the state has been successfully updated. In a real world application, you would also want to have 
 separate error actions for handling unsuccessful calls.
 
 Sometimes an action does not include a payload, like in the `LOAD_HEROES` action. This action doesn't need
-to convey any information other than notifying that it is being dispatched. It's subsequent success action
-has a payload that contains all the loaded heroes. The `SAVE_HERO` action does include a payload, which is the
-hero we wish to save. It's success action also includes the saved hero as a payload. You'll see why all of 
+to convey any information other than notifying that it is being dispatched. Its subsequent success action
+has a payload that contains all the loaded heroes. The `SAVE_HERO` action includes a payload, which is the
+hero we wish to save. Its success action also includes the saved hero as a payload. You'll see why all of 
 this is important in the next section on reducers.
 
 {%highlight javascript %}
@@ -225,7 +225,7 @@ export class HeroActions {
 {% endhighlight %}
 
 Having the actions setup in this way makes it very convenient when we are later building our components. By
-being able to inject them, we can have access to those actions wherever we need them, and can then quickly
+being able to inject them, we can have access to those actions wherever we need them, and can quickly
 and easily dispatch them to the store.
 
 {% highlight javascript %}
@@ -252,8 +252,8 @@ Ah reducers. The deceptively simple functions that end up being the representati
 For me, this was one of the concepts that I had a hard time wrapping my head around. Not how the functions work,
 but in how they are actually consumed and mapped out to the rest of the application. 
 
-The concept of a reducer is very simple. It's a pure function (meaning that it produces no side effects), that
-given a state, and an action, will return a new state, based on it's inputs. That textbook definition is all
+The concept of a reducer is very simple. It's a pure function, meaning that it produces no side effects, that
+given a state, and an action, will return a new state. That textbook definition is all
 well and good, but what does it mean to us in practice? 
 
 In ngrx/store, each reducer function is used to represent some branch of our application state. Let's look
@@ -304,8 +304,8 @@ const initialState: HeroListState = [];
 {% endhighlight %}
 
 `HeroListState` is the representation of the shape of the state that this reducer will produce. In this instance
-it's just an array of `Hero` objects. In the real world, you would probably include some other info in this such
-as if the list is currently loading or not, so you can display a spinner or something. We then setup an initial
+it's just an array of `Hero` objects. In the real world, you would probably include some other info, such
+as if the list is currently loading or not, so you can display something like a spinner. We then set up an initial
 state of an empty array. We use this below as a default parameter to the function, so that we always have a 
 valid state coming in to the function.
 
@@ -375,7 +375,7 @@ default: {
 }
 {% endhighlight %}
 
-Earlier I said that only the relevant state gets passed to a reducer. It does however, get sent every single
+Earlier I said that only the relevant state is passed to a reducer. It also is sent every single
 action that is dispatched to the store. This makes sense, but could easily be forgotten as often the actions
 and state map neatly together (although not always). Since a reducer needs to always return a valid state,
 if we get an action we don't care about (or is invalid), we just return the state we were given.
@@ -504,8 +504,8 @@ Something like that becomes really easy to do when we separate it out in this wa
 
 So, where do we make the call then? This is where [ngrx/effects](https://github.com/ngrx/effects) comes in. 
 Ngrx/effects is a library that enables you to generate side effects when actions are dispatched to the 
-store. I know I said earlier that side effects are bad, but we aren't talking about mutating state 
-here, but rather about taking action based off of previous actions. 
+store. I know I said earlier that side effects are unwanted, but in this case we are taking action based off
+of previous actions and not mutating state.
 
 A simple way to think of it is that ngrx/effects is an event listener of sorts. It listens for actions
 being dispatched to the store. You can then tell ngrx/effects that when a particular action is dispatched,
