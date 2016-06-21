@@ -11,7 +11,7 @@ but using the built-in survey features in SharePoint (I know, I know, ugh) weren
 powerful enough. I originally planned on writing the application in Angular 1, but after going
 to a local Angular user group meeting, I decided to try writing it with Angular 2.
 
-###Redux-like Concepts
+### Redux-like Concepts
 ---
 I've been playing around a bit with React/Redux on the side, and the patterns that emerge from
 that combination appeal to me. Using pure functions as reducers make testing so simple. Not mutating
@@ -37,7 +37,7 @@ my mind that this was a really great way to architect an application. I thought 
 [Angular 2 Tour of Heroes example application](https://angular.io/docs/ts/latest/tutorial/) 
 with the ngrx suite, would be a great way to show these concepts.
 
-###A brief word on setup
+### A brief word on setup
 ---
 Before we get started, I wanted to go over some of the infrastructure details of the example. You can see the 
 complete example app at [my github](https://github.com/bodiddlie/rxheroes).
@@ -56,7 +56,7 @@ serves up data from a simple JSON file. I found this method to be great in the p
 on as I can mock out my backend API without having to spin up IIS express (the backend for that is a ASP.NET 
 Web API project).
 
-###Taking Action
+### Taking Action
 ---
 At the heart of ngrx/store is the Action. By dispatching actions to the store, the state of our application is
 updated. There are any number of ways to construct actions and dispatch them; they are, after all, just simple
@@ -246,7 +246,7 @@ export class SomeComponent implments OnInit {
 
 You'll see how this all ties together later.
 
-###A Fine Wine Reduction
+### A Fine Wine Reduction
 ---
 Ah reducers. The deceptively simple functions that end up being the representation of your application's state.
 For me, this was one of the concepts that I had a hard time wrapping my head around. Not how the functions work,
@@ -435,7 +435,7 @@ By carefully thinking about the shape and structure of the state of your applica
 properly, you can remove a lot of logic from your components into these little bits that much more easily tested.
 That's probably one of the biggest benefits in my mind!
 
-###Services
+### Service With a Smile
 ---
 Okay, simple pure functions, neat self-describable action classes. That's great Nick. Fantastic. Now where the
 hell is all the data coming from? You haven't used `http` at all anywhere yet. What good is an application
@@ -487,7 +487,7 @@ to point out here is that in the `deleteHero` method, in the `map`, we're return
 `DELETE` call doesn't return any response body, but our effect and subsequent action will need to know
 what hero to act on. We'll see that later.
 
-###Cause and ngrx/effects
+### Cause and ngrx/effects
 ---
 So we've got our service that can retrieve data from the backend, but where should we use it? Let's think
 about the case where the application first loads up and we want to load the list of heroes. We have an action
@@ -582,7 +582,7 @@ the service. This is so that this effect can take that hero and send it on in th
 
 So now the data is able to move around and be acted upon, we just need to create some components to display it.
 
-###Children Should be Contained and Displayed
+### Children Should be Contained and Displayed
 ---
 A pattern that has emerged from the React community and is starting to take hold in Angular 2 as well is the
 idea of Smart vs Dumb components. The smart vs dumb thing can be a little misleading as the "dumb" components
@@ -758,7 +758,7 @@ strictly unidirectional manner, and can greatly simplify change detection and im
 [Pascal Precht's brilliant post](http://blog.thoughtram.io/angular/2016/02/22/angular-2-change-detection-explained.html) 
 on change detection in Angular 2 for more info on this.
 
-###Wrap Up
+### Wrap Up
 ---
 Hopefully this shows how ngrx/store, ngrx/effects, and Angular 2 all work together, but really, I hope it shows
 what the benefit is of following this particular architecture. By enforcing a unidirectional flow of data
