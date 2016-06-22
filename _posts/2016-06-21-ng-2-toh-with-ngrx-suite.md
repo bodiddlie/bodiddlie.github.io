@@ -585,13 +585,13 @@ So now the data is able to move around and be acted upon, we just need to create
 ### Children Should be Contained and Displayed
 ---
 A pattern that has emerged from the React community and is starting to take hold in Angular 2 as well is the
-idea of Smart vs Dumb components. The smart vs dumb thing can be a little misleading as the "dumb" components
-aren't dumb, just light on actual logic. I like thinking of them as Container components and Display 
-components (although even that can be misleading as containers often have some display pieces as well).
+idea of Smart vs Dumb components. Labeling them as smart vs dumb components can be misleading as the "dumb" components
+aren't dumb, just light on logic. I like thinking of them as Container components and Display 
+components. This also can be misleading as containers often have some display pieces as well.
 
-The basic idea is that you have a container component that is responsible for gathering all the data to display
+The basic idea is there is a container component that is responsible for gathering all the data to display
 and handling all the UI logic. It then delegates the actual rendering and UI event handling to child display
-components. In Angular 2 you  use `Input` and `Output` properties on the display components to achieve this.
+components. In Angular 2, you use `Input` and `Output` properties on the display components to achieve this.
 Let's look at the `Heroes` and `HeroList` components to see what I mean.
 
 {% highlight javascript %}
@@ -637,8 +637,8 @@ export class Heroes {
 }
 {% endhighlight %}
 
-Not a lot happening here, but it's really all the logic we need to display and interact with the list of
-heroes. I'll come back to the constructor last as it's the most important regarding all the ngrx stuff.
+There's not a lot happening here, but it's all the logic we need to display and interact with the list of
+heroes. I'll come back to the constructor last as it's the most important regarding all the ngrx concepts.
 All the other methods are just simple bits of logic we'll take as a result of things happening in the UI.
 You can see in the delete method, we just simply dispatch a `DELETE_HERO` action to the store.
 
@@ -660,8 +660,8 @@ for this component.
 {% endhighlight %}
 
 Here we're passing the info we need for display to our `rx-hero-list` component. We pass the list of heroes and
-the selected hero as inputs, and then subscribe to two events as outputs. The important point to pay attention
-to here is the use of the `async` pipe. This pipe essentially automatically subscribes to the observable for
+the selected hero as inputs, and then subscribe to two events as outputs. The important point to notice 
+is the use of the `async` pipe. This pipe essentially automatically subscribes to the observable for
 us, and returns any emitted values. This means that the `rx-hero-list` component only needs to know that
 it's getting a list of heroes. It doesn't need to worry itself with any Observable business at all.
 
@@ -687,10 +687,10 @@ export class HeroList {
 }
 {% endhighlight %}
 
-This is a good example of what a display component should be. It just concerns itself with what data it needs
+This is a good example of what a display component should be. It focuses on the data it needs
 to display and what events it should fire off. The only bit of logic here is to avoid events bubbling up on
 button click. The `heroes` input isn't an observable, as the `async` pipe in the container component handles
-unwrapping that for us. This makes dealing with the incoming data simple and makes the template simple for 
+unwrapping that for us. This makes dealing with the incoming data simple, and makes the template simple for 
 us as well.
 
 {% highlight html %}
