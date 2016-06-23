@@ -345,18 +345,19 @@ operator from ES6.
 case HeroActions.SAVE_HERO_SUCCESS: {
     let index = _.findIndex(state, {id: action.payload.id});
     if (index >= 0) {
-        return state
-            .slice(0, index)
-            .concat([action.payload])
-            .concat(state.slice(index + 1));
+        return [
+            ...state.slice(0, index),
+            action.payload,
+            ...state.slice(index + 1)
+        ];
     }
     return state;
 }
 {% endhighlight %}
 
 Saving an existing hero requires building out a new array with the old hero replaced by the new one. I'm using
-[lodash](https://lodash.com/) here to quickly find the index of the old hero and doing `slice` and `concat` to 
-build out the new array.
+[lodash](https://lodash.com/) here to quickly find the index of the old hero and using the array `slice` method
+along with the ES7 spread operator to build out a new array.
 
 {% highlight javascript %}
 case HeroActions.DELETE_HERO_SUCCESS: {
