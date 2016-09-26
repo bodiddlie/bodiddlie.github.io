@@ -5,6 +5,8 @@ categories: [javascript, typescript, web, programming, angular2, redux, ngrx]
 date: 2016-06-21 11:55:00 -0700
 comments: true
 ---
+**Update: 09/26/2016** Updated repo to Angular 2 final. See [the repo](https://github.com/bodiddlie/rxheroes) for more info.
+
 I recently was tasked with starting a brand new project at work that would be used for taking
 some simple internal surveys. Something like SurveyMonkey was overkill for what we're looking for,
 but using the built-in survey features in SharePoint (I know, I know, ugh) weren't going to be
