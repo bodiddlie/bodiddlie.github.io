@@ -7,7 +7,7 @@ comments: false
 ---
 When someone new to React asks online how to handle state or passing of props in 
 their application, the answer often includes learning and including Redux. While I
-think that Redux is a fantastic library and I personally love using it, I wanted to
+think that Redux is a fantastic library and personally love using it, I wanted to
 write this post to illustrate why it isn't always necessary or even a good idea.
 
 ### Hammer Time.....Stop
@@ -15,9 +15,9 @@ write this post to illustrate why it isn't always necessary or even a good idea.
 When I first started learning React, nearly every blog post, article, or tutorial I read
 also included Redux. Many places refer to the two as React/Redux, as if they are somehow
 inseparable or part of one larger framework. This is unfortunate, as React itself presents
-enough challenges to learning for beginners without the complexities of Redux thrown in.
+beginners with enough challenges to learning without the complexities of Redux thrown in.
 It also turns into the old problem of if the only tool you have is a hammer, everything
-begins to look like nail.
+begins to look like a nail.
 
 Redux is a tool that you can add to an application, not a necessary part of React. React
 isn't even necessary to use Redux, that's just where it is used most. Dan Abramov, the 
@@ -50,8 +50,9 @@ passing it down via props. The React docs even have
 Where this can become tedious is if you have multiple levels of components through which
 you then have to pass props. If that is the case then my first suggestion would be to 
 take a good, hard look at how your component hierarchy is structured. Are those levels
-of components really providing a value? If not, it's time for a refactor. If they are 
-necessary you may be already typing `yarn add redux` (because [yarn is awesome](https://yarnpkg.com)),
+of components really providing a value? If not, it's time for a refactor. Also, all those levels
+might not be necessary. Dan Abramov once again has some great [insight into this](https://www.reddit.com/r/reactjs/comments/5lbp9a/how_to_update_state_in_parents_parent/dbur5os/).
+If they are necessary you may be already typing `yarn add redux` (because [yarn is awesome](https://yarnpkg.com)),
 but wait....
 
 ### Providing a little context
