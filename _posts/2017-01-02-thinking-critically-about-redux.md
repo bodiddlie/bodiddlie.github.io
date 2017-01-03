@@ -3,7 +3,7 @@ layout: post
 title: "Thinking Critically About Redux In Your Application"
 categories: [javascript, react, redux, web, programming]
 date: 2017-01-02 08:00:00 -0700
-comments: false
+comments: true
 ---
 When someone new to React asks online how to handle state or passing of props in 
 their application, the answer often includes using Redux. While I
