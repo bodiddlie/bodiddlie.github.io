@@ -12,10 +12,269 @@ features worth checking out.
 
 One such feature that is the subject of this post is Authentication. Firebase Auth allows 
 you to use a bunch of different auth providers (Twitter, Google, Facebook, etc) for 
-your app. It's super simple to set up if you follow the [docs](https://firebase.google.com/docs). 
+your app. It's super simple to set up if you follow the 
+[docs](https://firebase.google.com/docs). Once set up, you'll need to figure out how
+it will fit in with your app, meaning protecting routes from being access by unauthorized
+users, and how you utilize the currently logged in user throughout the app.
 
-### Working with Auth in React and React Router v4
+### Initial Setup
 ---
+Once you've set up a project on the Firebase site, you need to get your app ready to use
+it. Here's an example of how I do it in my app:
 
 {%highlight javascript linenos %}
+import firebase from 'firebase';
+
+let config = {
+  //your settings from Firebase
+}
+
+//the root app just in case we need it
+export const firebaseApp = firebase.intializeApp(config);
+
+export const db = firebaseApp.database(); //the real-time database
+export const auth = firebaseApp.auth(); //the firebase auth namespace
+
+export const storageKey = 'KEY_FOR_LOCAL_STORAGE';
+
+export const isAuthenticated = () => {
+  return !!auth.currentUser || !!localStorage.getItem(storageKey);
+}
+{% endhighlight %}
+
+Most of the code here is straight out of the set up documentation for a Firebase web 
+app. I set up the connection to firebase and export the database and auth namespaces for
+use throughout the app. The important part here is starting on line 12. I create and export 
+a simple string constant `storageKey`. This is used in the simple function `isAuthenticated`.
+I check if the `auth.currentUser` is currently set, and if not, look in local storage for
+that key. I'll show where I set that item in local storage in a later snippet.
+
+You might be wondering why I check `auth.currentUser` and local storage instead of 
+using `onAuthStateChanged` like the Firebase documentation recommends. I actually do use
+`onAuthStateChanged` as you'll see in the next snippet, but the reason for this check
+is because when the page loads and the routes are getting parsed and validated, the 
+`currentUser` variable hasn't been finalized yet. This means that if someone is
+trying to access a route that should only be available to authenticated users, they will
+always be denied access if the route is the first thing they load on the page or if they
+reload. 
+
+There are [some examples](http://stackoverflow.com/questions/37370599/firebase-auth-delayed-on-refresh)
+out there about how to work around this problem using local storage and searching for an
+item that the Firebase SDK sets. I however ran into an issue with IE11 where that item
+did not exist in local storage. I haven't yet been able to find where it is in IE11, but
+rather than digging into that nightmare, I went with the simple solution of setting my
+own item. I do that in the root `<App />` component:
+
+{%highlight javascript linenos %}
+class App extends Component {
+  state = {
+    uid: null
+  }
+
+  componentDidMount() {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        window.localStorage.setItem(storageKey, user.uid);
+        this.setState({uid: user.uid});
+      } else {
+        window.localStorage.removeItem(storageKey);
+        this.setState({uid: null});
+      }
+    });
+  }
+}
+{% endhighlight %}
+
+Here I'm just starting the listener for `onAuthStateChanged` when the component mounts.
+Inside the listener I set the item in local storage based off of if I have a user or not.
+Then I can move on to protecting routes in the app so that only authenticated users can
+access them.
+
+### Procting Routes
+---
+I've been playing with the alpha of v4 of the excellent [React Router](https://react-router.now.sh/).
+I really like the new API that they're going with, particularly for route configuration. 
+`OnEnter` hooks are now no longer necessary for protecting routes and nice, declarative
+approach can be taken instead. Here's an example route setup :
+
+{%highlight javascript linenos %}
+class App extends Component {
+  //snip our user stuff from earlier
+
+  render() {
+    return (
+      <BrowserRouter>
+        <Match exactly pattern="/" component={HomePage} />
+        <Match pattern="/login" component={Login} />
+        <MatchWhenAuthorized pattern="/protected" component={ProtectedPage} />
+      </BrowserRouter>
+    )
+  }
+}
+
+const MatchWhenAuthorized = ({component: Component, ...rest}) => (
+  <Match {...rest} render={renderProps => (
+    isAuthenticated() ? (
+      <Component {...renderProps} />
+    ) : (
+      <Redirect to={{
+        pathname: '/login',
+        state: {from: renderProps.location}
+      }} />
+    )
+  )}/>
+)
+{% endhighlight %}
+
+The render method is just setting up a pretty simple route config. The magic really comes
+from the new `Match` component in React Router v4. Because of the new API with this 
+component, we can actually compose a new component to declaratively handle or route
+protection. 
+
+`MatchWhenAuthorized` isn't a part of the React Router API, but this example is pulled
+straight from their [docs](https://react-router.now.sh/auth-workflow). Basically, it 
+piggy-backs on the `Match` component, using ES6 rest/spread to pass the props given to
+it. The really interesting part is the `render` prop on `Match`. This prop takes a function
+that will be passed all the props that the component would get on a regular match, but 
+allows you to do some extra stuff. In this example, we check if authenticated and if so
+render the given component. If not, we use the React Router `Redirect` component to send 
+the user to the login page.
+
+### Logging In
+---
+So now that the app has a route that only logged in users can see, I need to provide a 
+way for users to actually log in. Here I'm only dealing with email/password authentication,
+so you would need to provide similar workflows for dealing with oAuth providers.
+
+{%highlight javascript linenos %}
+class Login extends Component {
+  state = {
+    email: '',
+    password: '',
+    redirectToReferrer: false
+  }
+
+  handleSubmit = (evt) => {
+    evt.preventDefault();
+    auth.signInWithEmailAndPassword(this.state.email, this.state.password).then(() => {
+      this.setState({redirectToReferrer: true});
+    });
+  }
+
+  render() {
+    const {from} = this.props.location.state || '/';
+    const {redirectToReferrer} = this.state;
+
+    return (
+      <section>
+        {redirectToReferrer && (
+          <Redirect to={from || '/protected'}/>
+        )}
+        {from && (
+          <p>You must log in to view the page at {from.pathname}</p>
+        )}
+        <form onSubmit={this.handleSubmit}>
+          <input type="text" value={this.state.email} onChange={e => this.setState{email: e.target.value}} />
+          <input type="password" value={this.state.password} onChange={e => this.setState{password: e.target.value}} />
+          <button type="submit">Sign In</button>
+        </form>
+      </section>
+    );
+  }
+}
+{% endhighlight %}
+
+Standard form handling stuff here. The interesting bit is in `render` where I check for
+`redirectToReferrer`. This bool gets set to true once the user has successfully signed
+in. If true, I use the React Router `Redirect` component to send them to either the route
+they requested or a default route if they just went straight to the login page. 
+Now the user is logged in and can access the protected route, how do I utilize the currently
+logged in user?
+
+### Current User
+---
+For this simple example, I'm going to use a list of todo items. A logged in user should only
+be able to see the items that they have entered. A simple way to structure this data in 
+the Firebase real-time database would be like this:
+
+{%highlight javascript linenos %}
+{
+  "todos": {
+    "userid1": {
+      "todo1": {"text": "Do something", "complete": false},
+      "todo2": {"text": "Do something", "complete": false},
+      "todo3": {"text": "Do something", "complete": false},
+      "todo4": {"text": "Do something", "complete": false},
+    },
+    "userid2": {
+      "todo5": {"text": "Do something", "complete": false},
+      "todo6": {"text": "Do something", "complete": false},
+      "todo7": {"text": "Do something", "complete": false},
+      "todo8": {"text": "Do something", "complete": false},
+    }
+  }
+}
+{% endhighlight %}
+
+Under the top todos object is a list of user ids. Under each user id is the list of todo
+items for that user. In a more complicated application you would want to denormalize 
+this data to reduce load size and simplify queries, but that's outside the scope 
+of this post. See the great [YouTube playlist from Firebase]() for more info. 
+
+Retrieving this data means that we need the uid of the current user. We can check 
+`auth.currentUser` but that won't be guaranteed to be set by the time the component
+renders if the user was already logged in (ie first visit or page refresh). Reading
+from local storage might work, but I could see arguments for not storing the uid for
+security reasons. To provide the uid, we go back to the `<App/>` component and add
+the uid to context.
+
+{%highlight javascript linenos %}
+class App extends Component {
+  static childContextTypes = {
+    uid: React.PropTypes.string
+  }
+
+  getChildContext() {
+    return {uid: this.state.uid};
+  }
+
+  //snip prior stuff
+}
+{% endhighlight %}
+
+Now whenever the user auth state changes, the uid will be updated in context. In order 
+for a component to use the uid, it will need to request it from context. I could just
+add a `contextTypes` to all the components that need it, but that isn't the best idea.
+The context API is still experimental and could change, which would mean I would need to
+update each component that used it if something did change. The way around this is to
+extract that functionality into somethign that will provide the uid for me.
+
+I could do this with a HOC (higher order component) like in [this post](https://medium.com/@mweststrate/how-to-safely-use-react-context-b7e343eff076#.xaikh4ldc)
+by Michael Westrate and linked in the official React docs. I however have taken a liking
+to the function-as-child pattern and used it for this. If you aren't familiar with the 
+function-as-child pattern, check out [this post]() by Name Here.
+
+{%highlight javascript linenos %}
+class UidProvider extends Component {
+  static contextTypes = {
+    uid: React.PropTypes.string
+  }
+
+  render() {
+    return this.props.children(this.context.uid);
+  }
+}
+{% endhighlight %}
+
+Using this simple component, I can declaratively provide the uid to any components that 
+need it. 
+
+{%highlight javascript linenos %}
+const ProtectedPage = () => (
+  <UidProvider>
+    {(uid) => (
+      <SomeComponentThatNeedsUID uid={uid} />
+    )}
+  </UidProvider>
+)
 {% endhighlight %}
