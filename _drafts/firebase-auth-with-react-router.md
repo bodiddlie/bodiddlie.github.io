@@ -117,10 +117,10 @@ const MatchWhenAuthorized = ({component: Component, ...rest}) => (
     isAuthenticated() ? (
       <Component {...renderProps} />
     ) : (
-      <Redirect to=\{\{
+      <Redirect to={ {
         pathname: '/login',
         state: {from: renderProps.location}
-      \}\} />
+      } } />
     )
   )}/>
 )
