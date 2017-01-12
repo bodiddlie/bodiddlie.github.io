@@ -1,9 +1,9 @@
 ---
 layout: post
 title: "Firebase Auth with React Router v4"
-date: 2017-01-10 12:00:00 -0700
+date: 2017-01-11 20:35:00 -0700
 categories: [javascript, react, react-router, firebase, web, programming, auth]
-comments: false
+comments: true
 ---
 [Firebase](https://firebase.google.com) is a really cool Backend-as-a-Service (BaaS) similar
 to the now defunct Parse. They have a great free tier that I think is quite generous. 
