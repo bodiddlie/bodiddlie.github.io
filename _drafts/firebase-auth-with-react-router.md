@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Firebase Auth with React Router v4"
-date: 2017-01-16 12:00:00 -0700
+date: 2017-01-10 12:00:00 -0700
 categories: [javascript, react, react-router, firebase, web, programming, auth]
 comments: false
 ---
@@ -44,7 +44,7 @@ export const isAuthenticated = () => {
 
 Most of the code here is straight out of the set up documentation for a Firebase web 
 app. I set up the connection to firebase and export the database and auth namespaces for
-use throughout the app. The important part here is starting on line 12. I create and export 
+use throughout the app. The important part here is starting on line 13. I create and export 
 a simple string constant `storageKey`. This is used in the simple function `isAuthenticated`.
 I check if the `auth.currentUser` is currently set, and if not, look in local storage for
 that key. I'll show where I set that item in local storage in a later snippet.
@@ -94,7 +94,7 @@ access them.
 ---
 I've been playing with the alpha of v4 of the excellent [React Router](https://react-router.now.sh/).
 I really like the new API that they're going with, particularly for route configuration. 
-`OnEnter` hooks are now no longer necessary for protecting routes and nice, declarative
+`OnEnter` hooks are now no longer necessary for protecting routes and a nice, declarative
 approach can be taken instead. Here's an example route setup :
 
 {%highlight javascript linenos %}
@@ -117,10 +117,10 @@ const MatchWhenAuthorized = ({component: Component, ...rest}) => (
     isAuthenticated() ? (
       <Component {...renderProps} />
     ) : (
-      <Redirect to={{
+      <Redirect to=\{\{
         pathname: '/login',
         state: {from: renderProps.location}
-      }} />
+      \}\} />
     )
   )}/>
 )
@@ -128,7 +128,7 @@ const MatchWhenAuthorized = ({component: Component, ...rest}) => (
 
 The render method is just setting up a pretty simple route config. The magic really comes
 from the new `Match` component in React Router v4. Because of the new API with this 
-component, we can actually compose a new component to declaratively handle or route
+component, I can actually compose a new component to declaratively handle route
 protection. 
 
 `MatchWhenAuthorized` isn't a part of the React Router API, but this example is pulled
@@ -136,8 +136,8 @@ straight from their [docs](https://react-router.now.sh/auth-workflow). Basically
 piggy-backs on the `Match` component, using ES6 rest/spread to pass the props given to
 it. The really interesting part is the `render` prop on `Match`. This prop takes a function
 that will be passed all the props that the component would get on a regular match, but 
-allows you to do some extra stuff. In this example, we check if authenticated and if so
-render the given component. If not, we use the React Router `Redirect` component to send 
+allows you to do some extra stuff. In this example, I check if the user is authenticated and if so
+render the given component. If not, I use the React Router `Redirect` component to send 
 the user to the login page.
 
 ### Logging In
@@ -219,7 +219,8 @@ the Firebase real-time database would be like this:
 Under the top todos object is a list of user ids. Under each user id is the list of todo
 items for that user. In a more complicated application you would want to denormalize 
 this data to reduce load size and simplify queries, but that's outside the scope 
-of this post. See the great [YouTube playlist from Firebase]() for more info. 
+of this post. See the great [YouTube playlist from Firebase](https://www.youtube.com/playlist?list=PLl-K7zZEsYLlP-k-RKFa7RyNPa9_wCH2s) 
+for more info. 
 
 Retrieving this data means that we need the uid of the current user. We can check 
 `auth.currentUser` but that won't be guaranteed to be set by the time the component
@@ -247,12 +248,13 @@ for a component to use the uid, it will need to request it from context. I could
 add a `contextTypes` to all the components that need it, but that isn't the best idea.
 The context API is still experimental and could change, which would mean I would need to
 update each component that used it if something did change. The way around this is to
-extract that functionality into somethign that will provide the uid for me.
+extract that functionality into something that will provide the uid for me.
 
 I could do this with a HOC (higher order component) like in [this post](https://medium.com/@mweststrate/how-to-safely-use-react-context-b7e343eff076#.xaikh4ldc)
 by Michael Westrate and linked in the official React docs. I however have taken a liking
 to the function-as-child pattern and used it for this. If you aren't familiar with the 
-function-as-child pattern, check out [this post]() by Name Here.
+function-as-child pattern, check out [this post](https://medium.com/merrickchristensen/function-as-child-components-5f3920a9ace9#.2e0r9gutx) 
+by Merrick Christensen.
 
 {%highlight javascript linenos %}
 class UidProvider extends Component {
@@ -278,3 +280,15 @@ const ProtectedPage = () => (
   </UidProvider>
 )
 {% endhighlight %}
+
+I like this function-as-child pattern because I'm not bound to what props a HOC might
+declare. I have full control over how the information is provided to my components. Now that
+the uid is getting passed in to the component that needs it, it can be used in whatever way
+the component needs. Anywhere else in the application that might need to use the uid can 
+simply use the `UidProvider` component and be safe from any changes in the React context API.
+
+---
+By combining the great features of Firebase, React, and React Router, I've got a nice, simple
+way to authenticate users in my app. The new APIs provided by React Router v4 allow for my
+route configurations to be much more expressive and declarative. This makes the code easier
+to reason about, especially when returning to it after some time away. 
