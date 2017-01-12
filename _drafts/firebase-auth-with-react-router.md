@@ -10,12 +10,13 @@ to the now defunct Parse. They have a great free tier that I think is quite gene
 Firebase offers a real-time database, storage options, hosting, and many other nice 
 features worth checking out. 
 
-One such feature that is the subject of this post is Authentication. Firebase Auth allows 
+One feature that I really like is Authentication. Firebase Auth allows 
 you to use a bunch of different auth providers (Twitter, Google, Facebook, etc) for 
-your app. It's super simple to set up if you follow the 
+your app. It's quite simple to set up if you follow the 
 [docs](https://firebase.google.com/docs). Once set up, you'll need to figure out how
-it will fit in with your app, meaning protecting routes from being access by unauthorized
-users, and how you utilize the currently logged in user throughout the app.
+it will fit in with your app; meaning protecting routes from being accessed by unauthorized
+users, and how you utilize the currently logged in user throughout the app. In this post I'll 
+show how I've been handling all this in a React app using the alpha of React Router v4.
 
 ### Initial Setup
 ---
@@ -42,11 +43,11 @@ export const isAuthenticated = () => {
 }
 {% endhighlight %}
 
-Most of the code here is straight out of the set up documentation for a Firebase web 
-app. I set up the connection to firebase and export the database and auth namespaces for
-use throughout the app. The important part here is starting on line 13. I create and export 
+Most of the code above is straight out of the set up documentation for a Firebase web 
+app. I set up the connection to firebase and exported the database and auth namespaces for
+use throughout the app. The important part here is starting on line 13. I created and exported 
 a simple string constant `storageKey`. This is used in the simple function `isAuthenticated`.
-I check if the `auth.currentUser` is currently set, and if not, look in local storage for
+I checked if the `auth.currentUser` is currently set. If it isn't, I look in local storage for
 that key. I'll show where I set that item in local storage in a later snippet.
 
 You might be wondering why I check `auth.currentUser` and local storage instead of 
@@ -60,7 +61,7 @@ reload.
 
 There are [some examples](http://stackoverflow.com/questions/37370599/firebase-auth-delayed-on-refresh)
 out there about how to work around this problem using local storage and searching for an
-item that the Firebase SDK sets. I however ran into an issue with IE11 where that item
+item that the Firebase SDK sets. However, I ran into an issue with IE11 where that item
 did not exist in local storage. I haven't yet been able to find where it is in IE11, but
 rather than digging into that nightmare, I went with the simple solution of setting my
 own item. I do that in the root `<App />` component:
@@ -136,7 +137,7 @@ straight from their [docs](https://react-router.now.sh/auth-workflow). Basically
 piggy-backs on the `Match` component, using ES6 rest/spread to pass the props given to
 it. The really interesting part is the `render` prop on `Match`. This prop takes a function
 that will be passed all the props that the component would get on a regular match, but 
-allows you to do some extra stuff. In this example, I check if the user is authenticated and if so
+allows you to do some extra manipulation. In this example, I check if the user is authenticated and if so
 render the given component. If not, I use the React Router `Redirect` component to send 
 the user to the login page.
 
@@ -184,7 +185,7 @@ class Login extends Component {
 }
 {% endhighlight %}
 
-Standard form handling stuff here. The interesting bit is in `render` where I check for
+This is just standard form handling. The interesting bit is in `render` where I check for
 `redirectToReferrer`. This bool gets set to true once the user has successfully signed
 in. If true, I use the React Router `Redirect` component to send them to either the route
 they requested or a default route if they just went straight to the login page. 
@@ -193,7 +194,7 @@ logged in user?
 
 ### Current User
 ---
-For this simple example, I'm going to use a list of todo items. A logged in user should only
+For this simple example, I'm going to use a list of to-do items. A logged in user should only
 be able to see the items that they have entered. A simple way to structure this data in 
 the Firebase real-time database would be like this:
 
@@ -216,7 +217,7 @@ the Firebase real-time database would be like this:
 }
 {% endhighlight %}
 
-Under the top todos object is a list of user ids. Under each user id is the list of todo
+Under the top to-dos object is a list of user ids. Under each user id is the list of to-do
 items for that user. In a more complicated application you would want to denormalize 
 this data to reduce load size and simplify queries, but that's outside the scope 
 of this post. See the great [YouTube playlist from Firebase](https://www.youtube.com/playlist?list=PLl-K7zZEsYLlP-k-RKFa7RyNPa9_wCH2s) 
@@ -245,9 +246,9 @@ class App extends Component {
 
 Now whenever the user auth state changes, the uid will be updated in context. In order 
 for a component to use the uid, it will need to request it from context. I could just
-add a `contextTypes` to all the components that need it, but that isn't the best idea.
-The context API is still experimental and could change, which would mean I would need to
-update each component that used it if something did change. The way around this is to
+add a `contextTypes` to all the components that need it, but that isn't the best idea because
+the context API is still experimental and could change. This would mean I would need to
+update each component that used `contextypes` if something did change. The way around this is to
 extract that functionality into something that will provide the uid for me.
 
 I could do this with a HOC (higher order component) like in [this post](https://medium.com/@mweststrate/how-to-safely-use-react-context-b7e343eff076#.xaikh4ldc)
@@ -288,7 +289,7 @@ the component needs. Anywhere else in the application that might need to use the
 simply use the `UidProvider` component and be safe from any changes in the React context API.
 
 ---
-By combining the great features of Firebase, React, and React Router, I've got a nice, simple
+By combining the great features of Firebase, React, and React Router, I have a simple
 way to authenticate users in my app. The new APIs provided by React Router v4 allow for my
 route configurations to be much more expressive and declarative. This makes the code easier
 to reason about, especially when returning to it after some time away. 
