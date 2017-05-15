@@ -31,7 +31,7 @@ let config = {
 }
 
 //the root app just in case we need it
-export const firebaseApp = firebase.intializeApp(config);
+export const firebaseApp = firebase.initializeApp(config);
 
 export const db = firebaseApp.database(); //the real-time database
 export const auth = firebaseApp.auth(); //the firebase auth namespace
