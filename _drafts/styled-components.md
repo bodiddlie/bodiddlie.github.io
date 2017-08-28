@@ -13,34 +13,42 @@ in a new app.
 
 ### Why I Chose Styled-Components
 ---
-When I started using React, I was using SASS to handle my styles. It worked, but getting 
-webpack to do what I wanted with React was often finicky enough, let alone throwing more
-loaders for styles in the mix. When [create-react-app]() came out, I loved the simplicity
-of development and build process that it brought, but doing SASS without ejecting meant
-running a separate Gulp task for building styles.
+When I strated using React, I was using SASS to handle my styles. That worked fine unitl
+I started working on my [headache diary]() project. One of the components I was building for
+this project was scale for the user to record the level of pain they had experienced for
+that day. At the time, I was unsure what the scale would be, and was thinking it might need
+to be dynamic depending on what the user wanted to track. The color would range from green
+to red, with an unknown number of segments. 
 
-Eventually, I grew tired of having styles in a separate file from the components they were
-styling. Even if I kept the component definition and styles in the same location, it was
-cumbersome for my workflow to switch back and forth. Plus, even with a proper linter,
-`className` was something I would forget with disturbing regularity. This led me to try
-inline-styling using plain javascript objects. This works, but I lose auto-prefixing (no 
-way I'll remember to add them) and I don't like the camelCased syntax for properties (see 
-`className`). Aphrodite, Glamour, etc all felt the same to me, and didn't always have
-easy support for things like `:hover`.
+Doing this in SASS or straight CSS would have been hard as I wanted smooth color transitions
+between the segments. I initially was using style props to generate the segments, but then I 
+ran into the problem of not being able to use the `:hover` pseudo-class. This led me down the path
+of creating a HOC to handle hover. Not long after that I thought that there must be a better way.
+That's when I found [this wonderful talk]() by Max Stoiber introducing styled-components. 
 
-[Sytled-Components](https://www.styled-components.com) fit for me right away. I can have my
-styling right along with my component. Using template strings means that I'm writing actual
-CSS properties and not camelCased javascript. It supports *all* of CSS as well, so no weird
-handling of psuedo-classes. It does everything that I want it to do.
+My initial thought upon seeing the comparison chart in this talk was that it was too good to be true.
+However, once I downloaded the library and started using it, I found that it fit every need that I 
+was looking for and ones that I didn't realize I had. Styled-components supports all CSS. I was able to
+use the psuedo-classes I was looking for, media queries were dead simple, and best of all, I was able
+to organize my projects in a way that made so much more sense to me.
+
+Separation of concerns is an important concept, but in a world of components, styling is really
+not a separate concern from the logic of the component. These are things that are intrinsically
+tied together. That's not to say that having separate CSS files is a bad practice. Developers
+should do what works best for them and makes maintaining their projects easier. For me, using
+styled-components to have my styling right there with my components makes the most sense.
+Plus, I was able to avoid common mistakes that were always tripping me up; like using `class` when
+it should be `className` or typing `font-size` as a JS property instead of `fontSize`. 
 
 ### Simple Example
 ---
 Card Grid
 {% include sandbox.html id="MjAgQ88oR" %}
 
-### More Advanced Example
+### Features Not Even Metioned
 ---
-Button changing color
+Theming
+Styling Existing Components
 
 ### Final Thoughts
 ---
