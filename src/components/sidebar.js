@@ -18,7 +18,7 @@ export default () => (
         <FaTwitter size={40} />
       </Icon>
     </div>
-    <p>&copy; {new Date().getFullYear()}. All rights reserved.</p>
+    <CopyLine>&copy; {new Date().getFullYear()}. All rights reserved.</CopyLine>
   </Container>
 );
 
@@ -28,6 +28,10 @@ const Container = styled.div`
   text-align: center;
   flex: 1 25%;
   padding: 2rem 1rem;
+
+  @media (max-width: 768px) {
+    padding: 0.25rem 1rem;
+  }
 `;
 
 const Heading = styled.h1`
@@ -38,6 +42,10 @@ const Heading = styled.h1`
 const Lead = styled.p`
   font-size: 1.25rem;
   font-weight: 300;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const Icon = styled.a`
@@ -45,10 +53,16 @@ const Icon = styled.a`
   color: inherit;
 `;
 
-const HeadingLink = styled(Link)`
+const HeadingLink = styled(Link) `
   color: white;
   text-decoration: none;
   &:hover {
     text-decoration: underline;
   }
 `;
+
+const CopyLine = styled.p`
+  @media (max-width: 768px) {
+    margin-bottom: 0;
+  }
+`
